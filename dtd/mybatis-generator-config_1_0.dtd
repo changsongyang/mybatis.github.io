@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-       Copyright 2006-2019 the original author or authors.
+       Copyright 2006-2026 the original author or authors.
 
        Licensed under the Apache License, Version 2.0 (the "License");
        you may not use this file except in compliance with the License.
        You may obtain a copy of the License at
 
-          http://www.apache.org/licenses/LICENSE-2.0
+          https://www.apache.org/licenses/LICENSE-2.0
 
        Unless required by applicable law or agreed to in writing, software
        distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,7 +51,7 @@
   tables.
 -->
 <!ELEMENT context (property*, plugin*, commentGenerator?, (connectionFactory | jdbcConnection), javaTypeResolver?,
-                         javaModelGenerator, sqlMapGenerator?, javaClientGenerator?, table+)>
+    (modelGenerator | javaModelGenerator), sqlMapGenerator?, (clientGenerator | javaClientGenerator)?, table+)>
 <!ATTLIST context id ID #REQUIRED
   defaultModelType CDATA #IMPLIED
   targetRuntime CDATA #IMPLIED
@@ -107,9 +107,19 @@
   The javaModelGenerator element is used to define properties of the Java Model Generator.
   The Java Model Generator builds primary key classes, record classes, and Query by Example 
   indicator classes.
+  This element is deprecated - please use "modelGenerator" instead.
 -->
 <!ELEMENT javaModelGenerator (property*)>
 <!ATTLIST javaModelGenerator
+  targetPackage CDATA #REQUIRED
+  targetProject CDATA #REQUIRED>
+
+<!--
+  The modelGenerator element is used to define properties of the Model Generator (either Java or Kotlin
+  can be produced). The Model Generator builds Java model classes, Java records, or Kotlin data classes.
+-->
+<!ELEMENT modelGenerator (property*)>
+<!ATTLIST modelGenerator
   targetPackage CDATA #REQUIRED
   targetProject CDATA #REQUIRED>
 
@@ -138,9 +148,22 @@
   The Java Client Generator builds Java interface and implementation classes
   (as required) for each table.
   If this element is missing, then the generator will not build Java Client classes.
+  This element is deprecated. Please use "clientGenerator" instead.
 -->
 <!ELEMENT javaClientGenerator (property*)>
 <!ATTLIST javaClientGenerator
+  type CDATA #IMPLIED
+  targetPackage CDATA #REQUIRED
+  targetProject CDATA #REQUIRED>
+
+<!--
+  The clientGenerator element is used to define properties of the client Generator.
+  The Client Generator builds Java or Kotlin interface and implementation classes
+  (as required) for each table.
+  If this element is missing, then the generator will not build Client classes.
+-->
+<!ELEMENT clientGenerator (property*)>
+<!ATTLIST clientGenerator
   type CDATA #IMPLIED
   targetPackage CDATA #REQUIRED
   targetProject CDATA #REQUIRED>
@@ -166,8 +189,6 @@
   enableDeleteByExample CDATA #IMPLIED
   enableCountByExample CDATA #IMPLIED
   enableUpdateByExample CDATA #IMPLIED
-  selectByPrimaryKeyQueryId CDATA #IMPLIED
-  selectByExampleQueryId CDATA #IMPLIED
   modelType CDATA #IMPLIED
   escapeWildcards CDATA #IMPLIED
   delimitIdentifiers CDATA #IMPLIED
@@ -224,8 +245,7 @@
 <!ATTLIST generatedKey
   column CDATA #REQUIRED
   sqlStatement CDATA #REQUIRED
-  identity CDATA #IMPLIED
-  type CDATA #IMPLIED>
+  identity CDATA #IMPLIED>
 
 <!--
   The domainObjectRenamingRule element is used to specify a rule for renaming
